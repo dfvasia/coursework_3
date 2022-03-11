@@ -42,6 +42,7 @@ class UserDAO:
 
     def create(self, data):
         try:
+            print(data)
             user = User(**data)
             return self.db_update(user)
         except sqlalchemy.exc.IntegrityError:

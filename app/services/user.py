@@ -18,8 +18,8 @@ class UserService:
     def get_by_name(self, username: str) -> Optional[User]:
         return self.dao.get_by_username(username)
 
-    def create(self, username, password):
-        return self.dao.create({"username": username, "password": password, "password_hash": get_password_hash(password), "role_id": 1
+    def create(self, **user):
+        return self.dao.create({"username": user["username"], "surname": user["surname"], "email": user["email"], "password_hash": get_password_hash(user["password"]), "role_id": 1
         })
 
 

@@ -23,11 +23,22 @@ class User(db.Model):
     __tablename__ = 'user'
 
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String, unique=True)
-    password = db.Column(db.String)
+    username = db.Column(db.String)
+    surname = db.Column(db.String)
+    email = db.Column(db.String, unique=True)
     password_hash = db.Column(db.String)
     role_id = db.Column(db.String, db.ForeignKey("group.id"))
     role = db.relationship("Group")
+    refresh_token = db.Column(db.String)
+
+
+class Fgu(db.Model):
+    __tablename__ = 'fgu'
+    __table_args__ = (db.PrimaryKeyConstraint('id_user', 'id_genre'),)
+    id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = db.relationship('User')
+    id_genre = db.Column(db.Integer, db.ForeignKey('genre.id'))
+    genre = db.relationship('Genre')
 
 
 class Movie(db.Model):
@@ -43,6 +54,15 @@ class Movie(db.Model):
     genre = db.relationship("Genre")
     director_id = db.Column(db.Integer, db.ForeignKey("director.id"))
     director = db.relationship("Director")
+
+
+class Fmu(db.Model):
+    __tablename__ = 'fmu'
+    __table_args__ = (db.PrimaryKeyConstraint('id_user', 'id_movie'),)
+    id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = db.relationship('User')
+    id_movie = db.Column(db.Integer, db.ForeignKey('movie.id'))
+    movie = db.relationship('Movie')
 
 
 class Director(db.Model):
@@ -262,9 +282,9 @@ data = {
         {"name": "Мелодрама", "pk": 13}, {"name": "Детектив", "pk": 14}, {"name": "Авторское кино", "pk": 15},
         {"name": "Мультфильм", "pk": 16}, {"name": "Вестерн", "pk": 17}, {"name": "Мюзикл", "pk": 18}],
     "users": [
-        {"username": "Vasya", "password": "my_little_pony", "password_hash": "U7S/MAyO0dCZycKD1AYmRuf2HtYU5hrJQhSuH45lsbY=", "role_id": "2", "pk": 1},
-        {"username": "Oleg", "password": "qwerty", "password_hash": "AvcEKQGxcqmgwPOS/LR/E3JWWTkLPWOTBXgGQnXCIDs=", "role_id": "2", "pk": 2},
-        {"username": "Kriss", "password": "P@ssw0rd", "password_hash": "VMyKhZa/wQTYyRlDu/qFm8G2jvDh1+LCJa6/rPiepqw=", "role_id": "1", "pk": 3}],
+        {"username": "Vasya", "password": "my_little_pony", "email": "mail0.mail.ru", "password_hash": "U7S/MAyO0dCZycKD1AYmRuf2HtYU5hrJQhSuH45lsbY=", "role_id": "2", "pk": 1},
+        {"username": "Oleg", "password": "qwerty", "email": "mail1.mail.ru", "password_hash": "AvcEKQGxcqmgwPOS/LR/E3JWWTkLPWOTBXgGQnXCIDs=", "role_id": "2", "pk": 2},
+        {"username": "Kriss", "password": "P@ssw0rd", "email": "mail2.mail.ru", "password_hash": "VMyKhZa/wQTYyRlDu/qFm8G2jvDh1+LCJa6/rPiepqw=", "role_id": "1", "pk": 3}],
     "groups": [
         {"username": "user", "pk": 1},
         {"username": "admin", "pk": 2}]
@@ -284,7 +304,8 @@ for user in data["users"]:
     u = User(
         id=user["pk"],
         username=user["username"],
-        password=user["password"],
+        email=user["email"],
+        password_hash=user["password_hash"],
         role_id=user["role_id"])
 
     with db.session.begin():

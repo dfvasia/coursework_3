@@ -12,6 +12,8 @@ auth_ns = Namespace('auth')
 
 class LoginValidator(Schema):
     username = fields.Str(required=True)
+    surname = fields.Str(required=True)
+    email = fields.Str(required=True)
     password = fields.Str(required=True)
 
 
@@ -21,7 +23,7 @@ class AuthView(Resource):
         """Create token"""
         try:
             validated_data = LoginValidator().load(request.json)
-            user = user_service.get_by_name(validated_data['username'])
+            user = user_service.get_by_name(validated_data['email'])
             if not user:
                 abort(404)
             token_data = jwt.JwtSchema().load({'user_id': user.id, 'role': user.role_id})
