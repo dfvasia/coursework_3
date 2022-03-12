@@ -15,13 +15,15 @@ class UserService:
     # def get_all(self):
     #     return self.dao.get_all()
 
-    def get_by_name(self, username: str) -> Optional[User]:
-        return self.dao.get_by_username(username)
+    def get_by_user_email(self, email: str) -> Optional[User]:
+        return self.dao.get_by_user_email(email)
 
     def create(self, **user):
-        return self.dao.create({"username": user["username"], "surname": user["surname"], "email": user["email"], "password_hash": get_password_hash(user["password"]), "role_id": 1
-        })
+        return self.dao.create({"username": user["username"], "surname": user["surname"], "email": user["email"], "password_hash": get_password_hash(user["password"]), "role_id": 1})
 
+    def write_refresh_token(self, email: str, refresh_token: str) -> Optional[User]:
+        return self.dao.write_refresh_token(email, refresh_token)
+        # return self.dao.get_by_user_email(username)
 
     # def get_update(self, data):
     #     uid = data.get("id")

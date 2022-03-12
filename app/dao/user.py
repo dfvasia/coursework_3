@@ -19,22 +19,27 @@ class UserDAO:
         self.session.refresh(user)
         return user.id
 
-    def get_by_username(self, username: str) -> Optional[User]:
-        return self.session.query(User).filter(User.username == username).one_or_none()
+    def get_by_user_email(self, email: str) -> Optional[User]:
+        return self.session.query(User).filter(User.email == email).one_or_none()
 
-    def update_role(self, username: str, role: str):
+    def update_role(self, email: str, role: str):
         if role not in self._roles:
             raise IncorrectData
-        user = self.get_by_username(username)
+        user = self.get_by_user_email(email)
         user.role = role
         return self.db_update(user)
 
-    def update_password(self, username: str, password_hash: str):
-        user = self.get_by_username(username)
+    def write_refresh_token(self, email: str, refresh_token: str):
+        user = self.get_by_user_email(email)
+        user.refresh_token = refresh_token
+        return self.db_update(user)
+
+    def update_password(self, email: str, password_hash: str):
+        user = self.get_by_user_email(email)
         user.password = password_hash
         return self.db_update(user)
 
-    def get_one(self, uid) -> Optional['User']:
+    def get_one(self, uid) -> Optional[User]:
         return self.session.query(User).get(uid)
 
     def get_all(self):
@@ -42,7 +47,6 @@ class UserDAO:
 
     def create(self, data):
         try:
-            print(data)
             user = User(**data)
             return self.db_update(user)
         except sqlalchemy.exc.IntegrityError:
